@@ -11,8 +11,11 @@ namespace Bot.BusinessLogic.Services.Implementations
 {
 	public class CategoryService: ICategoryService
 	{
-        private readonly ApplicationContext _context = new ApplicationContext();
-
+        private readonly ApplicationContext _context;
+        public CategoryService(ApplicationContext context)
+        {
+            _context = context;
+        }
         public IMapper Mapper { get; set; }
 
         public int Add(string category,OperationType type)

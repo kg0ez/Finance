@@ -15,32 +15,51 @@ namespace Bot.Controllers
         private readonly IButtonService _buttonService;
         private readonly ICategoryService _categoryType;
         private readonly IOperationService _operationService;
+        private readonly ISheetService _sheetService;
+        private readonly IDriveService _driveService;
+        private readonly IUserService _userService;
 
         private MessageHendler messageHendler;
 
-        public BotController(IButtonService buttonService, ICategoryService categoryType,IOperationService operationService,ICurrencyService currencyService)
+        public BotController(IButtonService buttonService,
+            ICategoryService categoryType,
+            IOperationService operationService,
+            ICurrencyService currencyService,
+            ISheetService sheetService,
+            IDriveService driveService,
+            IUserService userService)
+
         {
+            _driveService = driveService;
             _categoryType = categoryType;
             _buttonService = buttonService;
             _operationService = operationService;
-            messageHendler = new MessageHendler(_buttonService,_categoryType,_operationService,currencyService);
+            _userService = userService;
+            _sheetService = sheetService;
+            //operationService.Get();
+            messageHendler = new MessageHendler(_buttonService, _categoryType, _operationService, currencyService, _sheetService, _driveService,_userService);
         }
         public async Task HandleUpdatesAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-
-            if (update.Type == UpdateType.Message && update?.Message?.Text != null)
+            try
             {
-                await messageHendler.HandleMessage(botClient, update.Message);
-                return;
+                if (update.Type == UpdateType.Message && update?.Message?.Text != null)
+                {
+                    await messageHendler.HandleMessage(botClient, update.Message);
+                    return;
+                }
+
+                if (update.Type == UpdateType.CallbackQuery)
+                {
+                    await HandleCallbackQuery(botClient, update.CallbackQuery);
+                    return;
+                }
             }
-
-            if (update.Type == UpdateType.CallbackQuery)
+            catch (Exception)
             {
-                await HandleCallbackQuery(botClient, update.CallbackQuery);
-                return;
             }
         }
-        
+
         public async Task HandleCallbackQuery(ITelegramBotClient botClient,
             CallbackQuery callbackQuery)
         {
@@ -64,7 +83,7 @@ namespace Bot.Controllers
                     await botClient.SendTextMessageAsync(
                     callbackQuery.Message.Chat.Id,
                     "Введите количество заработанных средств, используя тег /m-сумма\n /m-2500",
-                    replyMarkup:_buttonService.MenuButtonBack());
+                    replyMarkup: _buttonService.MenuButtonBack());
                     return;
                 }
             }

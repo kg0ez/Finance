@@ -11,11 +11,12 @@ namespace Bot.BusinessLogic.Services.Implementations
         {
             var currency = Currency();
 
-            if(type == "$")
-                return currency[0];
-            return currency[1];
+            return 10;
+            //if (type == "$")
+            //    return currency[0];
+            //return currency[1];
         }
-        
+
         private List<decimal> Currency()
         {
             List<decimal> currency = new List<decimal>();

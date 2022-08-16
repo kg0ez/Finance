@@ -8,6 +8,8 @@ using Bot.Services.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
+using Bot.Models.Data;
+using Microsoft.EntityFrameworkCore;
 
 var serviceProvider = new ServiceCollection()
             .AddLogging()
@@ -16,6 +18,13 @@ var serviceProvider = new ServiceCollection()
             .AddSingleton<ICategoryService, CategoryService>()
             .AddSingleton<IOperationService,OperationService>()
             .AddSingleton<ICurrencyService,CurrencyService>()
+            .AddSingleton<ISheetService,SheetService>()
+            .AddSingleton<IDriveService,DriveService>()
+            .AddSingleton<IUserService,UserService>()
+            //Server=localhost;Database=BotFinanceTracking;User Id = sa; Password=Valuetech@123;
+            //Server=localhost;Database=WebApiDb1;Trusted_Connection=True;TrustServerCertificate=True;
+            .AddDbContext<ApplicationContext>(opt =>opt.UseSqlServer("Server=localhost;Database=TrackerBot;Trusted_Connection=True;TrustServerCertificate=True;"
+            ,x => x.MigrationsAssembly("Bot")))
             .BuildServiceProvider();
 var mapperConfiguration = new MapperConfiguration(x =>
 {
@@ -29,10 +38,13 @@ var buttonService = serviceProvider.GetService<IButtonService>();
 var categoryService = serviceProvider.GetService<ICategoryService>();
 var operationService = serviceProvider.GetService<IOperationService>();
 var currencyService = serviceProvider.GetService<ICurrencyService>();
+var sheetService = serviceProvider.GetService<ISheetService>();
+var driveService = serviceProvider.GetService<IDriveService>();
+var userService = serviceProvider.GetService<IUserService>();
 
 categoryService.Mapper = mapper;
 
-var botController = new BotController(buttonService,categoryService,operationService,currencyService);
+var botController = new BotController(buttonService,categoryService,operationService,currencyService,sheetService,driveService,userService);
 
 var botClient = new TelegramBotClient("5588306325:AAGxT9g--Yggo0qkaHzNsYa1rDmDh3SoNvc");
 

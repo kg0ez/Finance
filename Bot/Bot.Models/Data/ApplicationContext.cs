@@ -6,17 +6,15 @@ namespace Bot.Models.Data
 {
 	public class ApplicationContext:DbContext
 	{
-		public ApplicationContext()
+		public ApplicationContext(DbContextOptions<ApplicationContext> options)
+            : base(options)
 		{
 			Database.EnsureCreated();
         }
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Operation> Operations { get; set; } = null!;
         public DbSet<Category> Categories { get; set; } = null!;
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			optionsBuilder.UseSqlServer("Server=localhost;Database=BotFinanceTracking;User Id=sa;Password=Valuetech@123;");
-		}
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Operation>()

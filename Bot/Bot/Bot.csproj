@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -17,11 +17,12 @@
     <None Remove="Helper\Handler\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.8" />
     <PackageReference Include="Telegram.Bot" Version="18.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Bot.BusinessLogic\Bot.BusinessLogic.Telegram\Bot.BusinessLogic.Telegram.csproj" />
-    <ProjectReference Include="..\Bot.BusinessLogic\Bot.BusinessLogic.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -30,5 +31,8 @@
     <Folder Include="Services\Implementations\" />
     <Folder Include="Helper\" />
     <Folder Include="Helper\Handler\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bot.BusinessLogic\Bot.BusinessLogic.csproj" />
   </ItemGroup>
 </Project>
