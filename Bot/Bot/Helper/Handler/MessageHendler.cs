@@ -51,7 +51,7 @@ namespace Bot.Helper.Handler
         }
 
         public async Task HandleMessage(ITelegramBotClient botClient, Message message)
-         {
+        {
             if (message.Text == "/start" || message.Text == "На главную")
             {
                 if (message.Text == "/start")
@@ -176,7 +176,7 @@ namespace Bot.Helper.Handler
                 try
                 {
                     decimal prise = _operationService.Price * coefficient;
-                    _operationService.Add(prise ,message.From.Username);
+                    _operationService.Add(prise, message.From.Username);
                     await botClient.SendTextMessageAsync(message.Chat.Id, "Успешно выполнено", replyMarkup: _mainKeyboard);
                 }
                 catch (Exception) { }
@@ -184,19 +184,20 @@ namespace Bot.Helper.Handler
             }
             if (message.Text.Length > 4 && message.Text.Substring(0, 4) == "/ct-")
             {
-                string category = message.Text.Substring(4);
                 OperationType type;
                 if (_isActiveIncome)
                     type = OperationType.Income;
                 else
                     type = OperationType.Discharge;
-                int id = _categoryType.Add(category, type);
-                if (id == 0)
+                if (_categoryType.IsExist(message, type))
                 {
                     await botClient.SendTextMessageAsync(message.Chat.Id, "Категория не была добавлена", replyMarkup: _mainKeyboard);
                     return;
                 }
-                OperationService.CategoryId = id;
+                else
+                {
+                    _categoryType.Add(message, type);
+                }
                 await botClient.SendTextMessageAsync(message.Chat.Id, "Введите количество заработанных средств, используя тег /m-сумма");
                 return;
             }

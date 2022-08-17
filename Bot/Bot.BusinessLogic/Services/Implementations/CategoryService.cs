@@ -6,30 +6,55 @@ using Bot.Common.Enums;
 using Bot.Models.Data;
 using Bot.Models.Models;
 using Microsoft.EntityFrameworkCore;
+using Telegram.Bot.Types;
 
 namespace Bot.BusinessLogic.Services.Implementations
 {
 	public class CategoryService: ICategoryService
 	{
         private readonly ApplicationContext _context;
-        public CategoryService(ApplicationContext context)
+        private readonly ISheetService _sheetService;
+        private readonly IUserService _userService;
+
+        public CategoryService(ApplicationContext context,
+            ISheetService sheetService,
+            IUserService userService)
         {
+            _userService = userService;
             _context = context;
+            _sheetService = sheetService;
         }
         public IMapper Mapper { get; set; }
 
-        public int Add(string category,OperationType type)
+        public void Add(Message message,OperationType type)
         {
+            var categoryName = message.Text.Substring(4);
+
             try
             {
-                var ct = new Category { Name = category, Type = type };
-                _context.Categories.Add(ct);
+                var userId = _userService.Get(message.From.Username).Id;
+                _sheetService.AddCellData(message, type);
+                var ct = new Category { Name = categoryName, Type = type,UserId = userId };
+                _context.Add(ct);
                 _context.SaveChanges();
-                return (_context.Categories.FirstOrDefault(c => c.Name == category)!).Id;
+                OperationService.CategoryId = _context.Categories.FirstOrDefault(c => c.Name == categoryName)!.Id;
             }
-            catch { return 0; }
+            catch(Exception) {}
         }
+        public bool IsExist(Message message, OperationType type)
+        {
+            var categoryName = message.Text.Substring(4);
 
+            var categories = _context.Categories.Where(x => x.Name == categoryName && x.Type == type);
+            if (categories.Count()>1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public List<CategoryDto> Get(int type)
         {
             IQueryable<Category> query = _context.Categories;
