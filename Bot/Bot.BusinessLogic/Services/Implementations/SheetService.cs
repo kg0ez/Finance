@@ -13,8 +13,10 @@ namespace Bot.BusinessLogic.Services.Implementations
     {
         private readonly SheetsService _sheetsService;
         private readonly IUserService _userService;
+
         private const string FIRST_SHEET_NAME = "Расходы";
         private const string SECOND_SHEET_NAME = "Доходы";
+
         public SheetService(IUserService userService)
         {
             _userService = userService;
@@ -24,6 +26,7 @@ namespace Bot.BusinessLogic.Services.Implementations
                 ApplicationName = APIInitializer.ApplicationName
             });
         }
+
         //Нужен рефакторинг
         public void AddDischarge(Operation operation)
         {

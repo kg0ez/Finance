@@ -9,7 +9,8 @@ namespace Bot.Services.Implementations
             KeyboardButton[]? buttonsSecondRow = default,
             KeyboardButton[]? buttonsThirdRow = default)
         {
-            ReplyKeyboardMarkup keyboard;
+            ReplyKeyboardMarkup keyboard= new(buttonsFirstRow);
+
             if (buttonsThirdRow != default)
             {
                 keyboard = new(new[]
@@ -17,17 +18,18 @@ namespace Bot.Services.Implementations
                         buttonsSecondRow!,
                         buttonsThirdRow!});
             }
+
             else if (buttonsSecondRow != default)
             {
                 keyboard = new(new[]
                     { buttonsFirstRow,
                         buttonsSecondRow!});
             }
-            else
-                keyboard = new(buttonsFirstRow);
+
             keyboard.ResizeKeyboard = true;
             return keyboard;
         }
+
         public List<InlineKeyboardButton> CategoryButtons()
         {
             List<InlineKeyboardButton> buttons = new List<InlineKeyboardButton>

@@ -18,6 +18,7 @@ namespace Bot.BusinessLogic.Services.Implementations
     {
         private const string DEFAULT_FILE_ID = "1f6rBrGRmrKehbeav19lgB1swyIkrhCjfjHkjDta52Ww";
         private readonly Google.Apis.Drive.v3.DriveService _driveService;
+
         private readonly IUserService _userService;
         private readonly ApplicationContext _context;
 
@@ -37,11 +38,16 @@ namespace Bot.BusinessLogic.Services.Implementations
             {
                 var file = new Google.Apis.Drive.v3.Data.File();
                 file.Name = "☕️PersonalFinanceTracker";
+
                 FilesResource.CopyRequest copyRequest = _driveService.Files.Copy(file, DEFAULT_FILE_ID);
+
                 var copiedFile = copyRequest.Execute();
+
                 GetPermission(message.Text, copiedFile.Id);
+
                 var user = _userService.Get(message.From.Username);
                 user.SpeadsheetId = copiedFile.Id;
+
                 _context.SaveChanges();
                 return true;
             }
@@ -58,8 +64,10 @@ namespace Bot.BusinessLogic.Services.Implementations
                 permission.EmailAddress = gmail;
                 permission.Type = "user";
                 permission.Role = "writer";
+
                 PermissionsResource.CreateRequest createPermRequest = _driveService.Permissions
                     .Create(permission, fileId);
+
                 createPermRequest.Execute();
             }
             catch (Exception){}

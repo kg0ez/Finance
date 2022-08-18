@@ -10,6 +10,7 @@ using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Bot.Models.Data;
 using Microsoft.EntityFrameworkCore;
+using Bot.Helper.Handler;
 
 var serviceProvider = new ServiceCollection()
             .AddLogging()
@@ -21,6 +22,7 @@ var serviceProvider = new ServiceCollection()
             .AddSingleton<ISheetService,SheetService>()
             .AddSingleton<IDriveService,DriveService>()
             .AddSingleton<IUserService,UserService>()
+            .AddSingleton<CategoryButtonHendler, CategoryButtonHendler>()
             //Server=localhost;Database=BotFinanceTracking;User Id = sa; Password=Valuetech@123;
             //Server=localhost;Database=WebApiDb1;Trusted_Connection=True;TrustServerCertificate=True;
             .AddDbContext<ApplicationContext>(opt =>opt.UseSqlServer("Server=localhost;Database=TrackerBot;Trusted_Connection=True;TrustServerCertificate=True;"
@@ -41,10 +43,12 @@ var currencyService = serviceProvider.GetService<ICurrencyService>();
 var sheetService = serviceProvider.GetService<ISheetService>();
 var driveService = serviceProvider.GetService<IDriveService>();
 var userService = serviceProvider.GetService<IUserService>();
+var categoryButtonHendler = serviceProvider.GetService<CategoryButtonHendler>();
 
 categoryService.Mapper = mapper;
 
-var botController = new BotController(buttonService,categoryService,operationService,currencyService,sheetService,driveService,userService);
+var botController = new BotController(buttonService,categoryService,operationService,currencyService,
+    sheetService,driveService,userService,categoryButtonHendler);
 
 var botClient = new TelegramBotClient("5588306325:AAGxT9g--Yggo0qkaHzNsYa1rDmDh3SoNvc");
 

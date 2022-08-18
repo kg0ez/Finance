@@ -20,6 +20,7 @@ namespace Bot.Controllers
         private readonly IUserService _userService;
 
         private MessageHendler messageHendler;
+        private CategoryButtonHendler _buttonHendler;
 
         public BotController(IButtonService buttonService,
             ICategoryService categoryType,
@@ -27,7 +28,8 @@ namespace Bot.Controllers
             ICurrencyService currencyService,
             ISheetService sheetService,
             IDriveService driveService,
-            IUserService userService)
+            IUserService userService,
+            CategoryButtonHendler categoryButtonHendler)
 
         {
             _driveService = driveService;
@@ -36,6 +38,7 @@ namespace Bot.Controllers
             _operationService = operationService;
             _userService = userService;
             _sheetService = sheetService;
+            _buttonHendler = categoryButtonHendler;
             //operationService.Get();
             messageHendler = new MessageHendler(_buttonService, _categoryType, _operationService, currencyService, _sheetService, _driveService,_userService);
         }
@@ -80,6 +83,7 @@ namespace Bot.Controllers
                 if (callbackQuery.Data.StartsWith(item.Name))
                 {
                     OperationService.CategoryId = item.Id;
+
                     await botClient.SendTextMessageAsync(
                     callbackQuery.Message.Chat.Id,
                     "Введите количество заработанных средств, используя тег /m-сумма\n /m-2500",
@@ -92,7 +96,6 @@ namespace Bot.Controllers
                 $"You choose with data: {callbackQuery.Data}");
             return;
         }
-        private CategoryButtonHendler _buttonHendler = new CategoryButtonHendler();
     }
 }
 

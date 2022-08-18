@@ -24,6 +24,7 @@ namespace Bot.BusinessLogic.Services.Implementations
             _context = context;
             _sheetService = sheetService;
         }
+
         public IMapper Mapper { get; set; }
 
         public void Add(Message message,OperationType type)
@@ -33,39 +34,46 @@ namespace Bot.BusinessLogic.Services.Implementations
             try
             {
                 var userId = _userService.Get(message.From.Username).Id;
+
                 _sheetService.AddCellData(message, type);
-                var ct = new Category { Name = categoryName, Type = type,UserId = userId };
-                _context.Add(ct);
+
+                var category = new Category { Name = categoryName, Type = type,UserId = userId };
+
+                _context.Add(category);
                 _context.SaveChanges();
+
                 OperationService.CategoryId = _context.Categories.FirstOrDefault(c => c.Name == categoryName)!.Id;
             }
             catch(Exception) {}
         }
+
         public bool IsExist(Message message, OperationType type)
         {
+            if (message.Text.Length==4)
+                return false;
+
             var categoryName = message.Text.Substring(4);
 
             var categories = _context.Categories.Where(x => x.Name == categoryName && x.Type == type);
+
             if (categories.Count()>1)
-            {
                 return true;
-            }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
         public List<CategoryDto> Get(int type)
         {
-            IQueryable<Category> query = _context.Categories;
-            query = query.Where(c => c.Type == (OperationType)type);
+            IQueryable<Category> query = _context.Categories.Where(c => c.Type == (OperationType)type);
+
             var categories = query.ToList();
+
             var categoriesDto = Mapper.Map<List<CategoryDto>>(categories);
             return categoriesDto!;
         }
         public List<CategoryDto> Get()
         {
             var categories = _context.Categories.AsNoTracking().ToList();
+
             var categoriesDto = Mapper.Map<List<CategoryDto>>(categories);
             return categoriesDto;
         }

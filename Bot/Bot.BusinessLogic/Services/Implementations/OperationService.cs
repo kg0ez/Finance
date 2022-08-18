@@ -11,6 +11,7 @@ namespace Bot.BusinessLogic.Services.Implementations
 	{
 		public static int CategoryId { get; set; }
         public decimal Price { get; set; }
+
         private readonly ISheetService _sheetService;
         private readonly IUserService _userService;
 
@@ -24,23 +25,24 @@ namespace Bot.BusinessLogic.Services.Implementations
             _context = context;
         }
 
-        public void Add(decimal price, string userName)
+        public void Add(decimal value, string userName)
 		{
             var user = _userService.Get(userName);
-            var operation = new Operation { CategoryId = CategoryId, Price = price, NameUser = userName,UserId = user.Id };
+
+            var operation = new Operation { CategoryId = CategoryId, Price = value, NameUser = userName,UserId = user.Id };
+
             _context.Operations.Add(operation);
             _context.SaveChanges();
+
             var category = _context.Categories
                 .AsNoTracking().FirstOrDefault(x => x.Id == CategoryId);
+
             var categoryOperationType = category.Type;
+
             if (categoryOperationType == OperationType.Discharge)
-            {
                 _sheetService.AddDischarge(operation);
-            }
-            else
-            {
-                _sheetService.AddIncome(operation);
-            }
+            _sheetService.AddIncome(operation);
+
         }
 
 
