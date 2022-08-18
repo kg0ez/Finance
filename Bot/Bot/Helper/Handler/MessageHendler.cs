@@ -1,4 +1,5 @@
 ﻿using Bot.BusinessLogic.Services.Interfaces;
+using Bot.Common;
 using Bot.Common.Dto;
 using Bot.Common.Enums;
 using Bot.Services.Interfaces;
@@ -106,7 +107,9 @@ namespace Bot.Helper.Handler
                 }
                 else if (message.Text == "💸 Добавить расходы")
                     text = "Для ввода расходов, пожалуйста, выберите категорию расходов или создайте свою";
-                
+
+                var user = _userService.Get(message.From.Username).Id;
+                ListOfSelectedIndexes.SelectedIndexes.Remove(user);
                 await botClient.SendTextMessageAsync(message.Chat.Id, text, replyMarkup: _accountingKeyboard);
                 return;
             }
@@ -117,7 +120,7 @@ namespace Bot.Helper.Handler
                 if (_isActiveIncome)
                     typeCategory = 1;
 
-                List<CategoryDto> categoriesDto = _categoryService.Get(typeCategory);
+                List<CategoryDto> categoriesDto = _categoryService.GetAllByType(typeCategory,message.From.Username);
 
                 CategoryButtonHendler.PageCount = Convert.ToInt32(Math.Ceiling((double)categoriesDto.Count / 3));
                 CategoryButtonHendler.ListCategory = categoriesDto;

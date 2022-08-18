@@ -8,11 +8,11 @@ namespace Bot.BusinessLogic.Services.Interfaces
 {
 	public interface ICategoryService
 	{
-		List<CategoryDto> Get(int type);
+		List<CategoryDto> GetAllByType(int type, string userName);
+		List<CategoryDto> GetAll(string userName);
 		void Add(Message message, OperationType type);
 		bool IsExist(Message message, OperationType type);
 		IMapper Mapper { get; set; }
-		List<CategoryDto> Get();
 	}
 }
 

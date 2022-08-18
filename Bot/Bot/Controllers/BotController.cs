@@ -67,7 +67,7 @@ namespace Bot.Controllers
         public async Task HandleCallbackQuery(ITelegramBotClient botClient,
             CallbackQuery callbackQuery)
         {
-            List<CategoryDto> list = _categoryType.Get();
+            List<CategoryDto> list = _categoryType.Get(callbackQuery.From.Username);
 
             if (callbackQuery.Data.StartsWith("category_next"))
             {

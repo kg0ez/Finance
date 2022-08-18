@@ -61,7 +61,7 @@ namespace Bot.BusinessLogic.Services.Implementations
 
             return false;
         }
-        public List<CategoryDto> Get(int type)
+        public List<CategoryDto> GetAllByType(int type, string userName)
         {
             IQueryable<Category> query = _context.Categories.Where(c => c.Type == (OperationType)type);
 
@@ -70,9 +70,11 @@ namespace Bot.BusinessLogic.Services.Implementations
             var categoriesDto = Mapper.Map<List<CategoryDto>>(categories);
             return categoriesDto!;
         }
-        public List<CategoryDto> Get()
+        public List<CategoryDto> GetAll(string userName)
         {
-            var categories = _context.Categories.AsNoTracking().ToList();
+            var userId = _context.Users.AsNoTracking().FirstOrDefault(x=>x.UserName == userName).Id;
+            
+            var categories = _context.Categories.AsNoTracking().Where(x=>x.UserId==userId).ToList();
 
             var categoriesDto = Mapper.Map<List<CategoryDto>>(categories);
             return categoriesDto;
