@@ -11,6 +11,8 @@ using Telegram.Bot.Polling;
 using Bot.Models.Data;
 using Microsoft.EntityFrameworkCore;
 using Bot.Helper.Handler;
+using Bot.BusinessLogic.Telegram.Services.Implementations;
+using Bot.BusinessLogic.Telegram.Services.Interfaces;
 
 var serviceProvider = new ServiceCollection()
             .AddLogging()

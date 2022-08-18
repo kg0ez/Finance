@@ -1,6 +1,7 @@
-﻿using Telegram.Bot;
+﻿using System;
+using Telegram.Bot;
 
-namespace Bot.BusinessLogic.Services.Interfaces
+namespace Bot.BusinessLogic.Telegram.Services.Interfaces
 {
 	public interface IErrorService
 	{

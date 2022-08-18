@@ -34,5 +34,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bot.BusinessLogic\Bot.BusinessLogic.csproj" />
+    <ProjectReference Include="..\Bot.BusinessLogic.Telegram\Bot.BusinessLogic.Telegram.csproj" />
   </ItemGroup>
 </Project>

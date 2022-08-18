@@ -1,11 +1,12 @@
-﻿using Bot.BusinessLogic.Services.Interfaces;
+﻿using System;
+using Bot.BusinessLogic.Telegram.Services.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 
-namespace Bot.BusinessLogic.Services.Implementations
+namespace Bot.BusinessLogic.Telegram.Services.Implementations
 {
-	public class ErrorService : IErrorService
-    {
+	public class ErrorService: IErrorService
+	{
         public Task HandleError(ITelegramBotClient client, Exception exception, CancellationToken cancellationToken)
         {
             var ErrorMessage = exception switch
