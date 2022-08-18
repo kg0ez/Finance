@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoMapper;
 using Bot.BusinessLogic.Services.Interfaces;
+using Bot.Common;
 using Bot.Common.Dto;
 using Bot.Common.Enums;
 using Bot.Models.Data;
@@ -41,8 +42,7 @@ namespace Bot.BusinessLogic.Services.Implementations
 
                 _context.Add(category);
                 _context.SaveChanges();
-
-                OperationService.CategoryId = _context.Categories.FirstOrDefault(c => c.Name == categoryName)!.Id;
+                ListOfSelectedIndexes.SelectedIndexes.Add(userId, _context.Categories.FirstOrDefault(c => c.Name == categoryName)!.Id);
             }
             catch(Exception) {}
         }
