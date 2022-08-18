@@ -29,7 +29,7 @@ namespace Bot.BusinessLogic.Services.Implementations
 		{
             var user = _userService.Get(userName);
             var selectedCategory = ListOfSelectedIndexes.SelectedIndexes.FirstOrDefault(x=>x.Key == user.Id).Key;
-            var operation = new Operation { CategoryId = selectedCategory, Price = price, NameUser = userName,UserId = user.Id };
+            var operation = new Operation { CategoryId = selectedCategory, Price = value, NameUser = userName,UserId = user.Id };
             _context.Operations.Add(operation);
             _context.SaveChanges();
 
