@@ -1,6 +1,7 @@
 ﻿using Bot.BusinessLogic.Helper;
 using Bot.BusinessLogic.Services.Implementations;
 using Bot.BusinessLogic.Services.Interfaces;
+using Bot.Common;
 using Bot.Common.Dto;
 using Bot.Helper.Handler;
 using Bot.Services.Interfaces;
@@ -75,11 +76,11 @@ namespace Bot.Controllers
                 await _buttonHendler.BackPage(botClient, callbackQuery, _buttonService);
                 return;
             }
-            foreach (var item in list)
+            foreach (var category in list)
             {
-                if (callbackQuery.Data.StartsWith(item.Name))
+                if (callbackQuery.Data.StartsWith(category.Name))
                 {
-                    OperationService.CategoryId = item.Id;
+                    ListOfSelectedIndexes.SelectedIndexes.Add(_userService.Get(callbackQuery.From.Username).Id, category.Id);
                     await botClient.SendTextMessageAsync(
                     callbackQuery.Message.Chat.Id,
                     "Введите количество заработанных средств, используя тег /m-сумма\n /m-2500",

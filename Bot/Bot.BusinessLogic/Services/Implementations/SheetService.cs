@@ -39,7 +39,6 @@ namespace Bot.BusinessLogic.Services.Implementations
             appendRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
             appendRequest.Execute();
         }
-
         public void AddIncome(Operation operation)
         {
             var user = _userService.Get(operation.NameUser);
@@ -69,7 +68,6 @@ namespace Bot.BusinessLogic.Services.Implementations
             return getFileResponse.SpreadsheetUrl;
 
         }
-
         private int GetColumnIndex(string SpreadsheetId, string range)
         {
             SpreadsheetsResource.ValuesResource.GetRequest getValueRequest = _sheetsService.Spreadsheets.Values.Get(SpreadsheetId, range);
@@ -232,7 +230,6 @@ namespace Bot.BusinessLogic.Services.Implementations
                 AddCellData(message, type);
             }
         }
-
         private void UpdateCells(int? sheetId, string spreadsheetId, int columnIndex,string range)
         {
             var updateCellsRequest = new Request()
