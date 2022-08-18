@@ -198,7 +198,7 @@ namespace Bot.Helper.Handler
                 {
                     _categoryType.Add(message, type);
                 }
-                await botClient.SendTextMessageAsync(message.Chat.Id, "Введите количество заработанных средств, используя тег /m-сумма");
+                await botClient.SendTextMessageAsync(message.Chat.Id, "Введите количество потраченных/заработанных средств, используя тег /m-сумма");
                 return;
             }
             await botClient.SendTextMessageAsync(message.Chat.Id, $"Команда: " + message.Text + " не найдена");
