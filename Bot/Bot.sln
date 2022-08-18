@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot.Common", "Bot.Common\Bo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot.BusinessLogic", "Bot.BusinessLogic\Bot.BusinessLogic.csproj", "{17BE84D8-9078-4D1F-BD08-CFA7334E4F2C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot.BusinessLogic.Telegram", "Bot.BusinessLogic.Telegram\Bot.BusinessLogic.Telegram.csproj", "{181C4413-D057-42F3-B80E-6785807229B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{17BE84D8-9078-4D1F-BD08-CFA7334E4F2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17BE84D8-9078-4D1F-BD08-CFA7334E4F2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17BE84D8-9078-4D1F-BD08-CFA7334E4F2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{181C4413-D057-42F3-B80E-6785807229B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{181C4413-D057-42F3-B80E-6785807229B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{181C4413-D057-42F3-B80E-6785807229B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{181C4413-D057-42F3-B80E-6785807229B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,5 +56,6 @@ Global
 		{5B438610-5DF2-48D8-BFFB-5678F0F66AEF} = {A6471BBE-505B-4B28-A72C-FD56C2524492}
 		{BBDACCC7-9E2A-4119-A26C-0E41DA4EFB1F} = {58FA0991-4E83-4D3D-9C9A-10BBFD5231CD}
 		{17BE84D8-9078-4D1F-BD08-CFA7334E4F2C} = {499D4CFC-DA81-4417-8BD7-C7BD077BDEF3}
+		{181C4413-D057-42F3-B80E-6785807229B0} = {499D4CFC-DA81-4417-8BD7-C7BD077BDEF3}
 	EndGlobalSection
 EndGlobal
