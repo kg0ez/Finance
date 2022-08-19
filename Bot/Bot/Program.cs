@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Bot.Helper.Handler;
 using Bot.BusinessLogic.Telegram.Services.Implementations;
 using Bot.BusinessLogic.Telegram.Services.Interfaces;
+using Telegram.Bot.Types;
 
 var serviceProvider = new ServiceCollection()
             .AddLogging()
@@ -55,6 +56,7 @@ var botController = new BotController(buttonService,categoryService,operationSer
 var botClient = new TelegramBotClient("5588306325:AAGxT9g--Yggo0qkaHzNsYa1rDmDh3SoNvc");
 
 using var cts = new CancellationTokenSource();
+CallbackQuery callback = new CallbackQuery();
 
 var receiverOptions = new ReceiverOptions
 {
@@ -66,6 +68,47 @@ botClient.StartReceiving(
     errorService.HandleError,
     receiverOptions,
     cancellationToken: cts.Token);
+
+
+//daily
+TimeSpan day = new TimeSpan(24, 00, 00);
+TimeSpan now = TimeSpan.Parse(DateTime.Now.ToString("HH:mm"));
+TimeSpan activationTime = new TimeSpan(8, 0, 0);
+
+TimeSpan timeLeftUntilFirstRun = ((day - now) + activationTime);
+if (timeLeftUntilFirstRun.TotalHours > 24)
+    timeLeftUntilFirstRun -= new TimeSpan(24, 0, 0);
+
+System.Timers.Timer execute = new System.Timers.Timer();
+execute.Interval = timeLeftUntilFirstRun.TotalMilliseconds;
+execute.Elapsed += EventHandler;
+
+async void EventHandler(object? sender, System.Timers.ElapsedEventArgs e)
+{
+    //you need to create in table "User" isNotification.
+    //It is a bool column which allows to notify the user
+    if (true)
+        await botController.NotificationDaily();
+}
+
+execute.Start();
+
+//Last day in month
+var tickerTimer = new System.Timers.Timer();
+tickerTimer.Start();
+tickerTimer.Elapsed += async (o, e) =>
+{
+    tickerTimer.Interval = 86400000;
+    await Task.Run(async () =>
+    {
+        //you need to create in table "User" isNotification.
+        //It is a bool column which allows to notify the user
+        if (true && DateTime.Now.Day<DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+        {
+            await botController.NotificationMonth();
+        }
+    });
+};
 
 var me = await botClient.GetMeAsync();
 Console.WriteLine(me.Username + " is working");

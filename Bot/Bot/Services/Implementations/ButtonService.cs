@@ -39,6 +39,14 @@ namespace Bot.Services.Implementations
                 };
             return buttons;
         }
+        public List<InlineKeyboardButton> Settings()
+        {
+            List<InlineKeyboardButton> buttons = new List<InlineKeyboardButton>
+                {
+                    InlineKeyboardButton.WithCallbackData("Уведомления бота", "notification"),
+                };
+            return buttons;
+        }
         public ReplyKeyboardMarkup MenuButtonBack()
         {
             ReplyKeyboardMarkup keyboard = new(
