@@ -103,7 +103,7 @@ tickerTimer.Elapsed += async (o, e) =>
     {
         //you need to create in table "User" isNotification.
         //It is a bool column which allows to notify the user
-        if (true && DateTime.Now.Day<DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+        if (true && DateTime.Now.Day >= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
         {
             await botController.NotificationMonth();
         }
