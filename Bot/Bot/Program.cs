@@ -18,18 +18,18 @@ using Telegram.Bot.Types;
 var serviceProvider = new ServiceCollection()
             .AddLogging()
             .AddSingleton<IButtonService, ButtonService>()
-            .AddSingleton<IErrorService,ErrorService>()
+            .AddSingleton<IErrorService, ErrorService>()
             .AddSingleton<ICategoryService, CategoryService>()
-            .AddSingleton<IOperationService,OperationService>()
-            .AddSingleton<ICurrencyService,CurrencyService>()
-            .AddSingleton<ISheetService,SheetService>()
-            .AddSingleton<IDriveService,DriveService>()
-            .AddSingleton<IUserService,UserService>()
+            .AddSingleton<IOperationService, OperationService>()
+            .AddSingleton<ICurrencyService, CurrencyService>()
+            .AddSingleton<ISheetService, SheetService>()
+            .AddSingleton<IDriveService, DriveService>()
+            .AddSingleton<IUserService, UserService>()
             .AddSingleton<CategoryButtonHendler, CategoryButtonHendler>()
             //Server=localhost;Database=BotFinanceTracking;User Id = sa; Password=Valuetech@123;
             //Server=localhost;Database=WebApiDb1;Trusted_Connection=True;TrustServerCertificate=True;
-            .AddDbContext<ApplicationContext>(opt =>opt.UseSqlServer("Server=localhost;Database=TrackerBot;Trusted_Connection=True;TrustServerCertificate=True;"
-            ,x => x.MigrationsAssembly("Bot")))
+            .AddDbContext<ApplicationContext>(opt => opt.UseSqlServer("Server=localhost;Database=TrackerBot;Trusted_Connection=True;TrustServerCertificate=True;"
+            , x => x.MigrationsAssembly("Bot")))
             .BuildServiceProvider();
 var mapperConfiguration = new MapperConfiguration(x =>
 {
@@ -50,8 +50,8 @@ var categoryButtonHendler = serviceProvider.GetService<CategoryButtonHendler>();
 
 categoryService.Mapper = mapper;
 
-var botController = new BotController(buttonService,categoryService,operationService,currencyService,
-    sheetService,driveService,userService,categoryButtonHendler);
+var botController = new BotController(buttonService, categoryService, operationService, currencyService,
+    sheetService, driveService, userService, categoryButtonHendler);
 
 var botClient = new TelegramBotClient("5588306325:AAGxT9g--Yggo0qkaHzNsYa1rDmDh3SoNvc");
 
@@ -85,10 +85,11 @@ execute.Elapsed += EventHandler;
 
 async void EventHandler(object? sender, System.Timers.ElapsedEventArgs e)
 {
-    //you need to create in table "User" isNotification.
-    //It is a bool column which allows to notify the user
-    if (true)
-        await botController.NotificationDaily();
+    var users = userService.GetForNotify();
+    foreach (var user in users)
+    {
+        await botController.NotificationDaily(user.ChatId);
+    }
 }
 
 execute.Start();
@@ -101,11 +102,13 @@ tickerTimer.Elapsed += async (o, e) =>
     tickerTimer.Interval = 86400000;
     await Task.Run(async () =>
     {
-        //you need to create in table "User" isNotification.
-        //It is a bool column which allows to notify the user
-        if (true && DateTime.Now.Day >= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+        if (DateTime.Now.Day >= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
         {
-            await botController.NotificationMonth();
+            var users = userService.GetForNotify();
+            foreach (var user in users)
+            {
+                await botController.NotificationMonth(user.ChatId);
+            }
         }
     });
 };

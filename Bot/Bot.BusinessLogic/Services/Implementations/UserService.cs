@@ -48,5 +48,11 @@ namespace Bot.BusinessLogic.Services.Implementations
 
             return user;
         }
+        public List<Models.Models.User> GetForNotify()
+        {
+            var query = _context.Users.Where(x => x.NotificationIsToggle == true);
+            var users = query.AsNoTracking().ToList();
+            return users;
+        }
     }
 }

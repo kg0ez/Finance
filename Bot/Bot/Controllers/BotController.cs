@@ -20,7 +20,6 @@ namespace Bot.Controllers
         private readonly IDriveService _driveService;
         private readonly IUserService _userService;
         private ITelegramBotClient _telegramBotClient;
-        private CallbackQuery _callback;
 
         private MessageHendler messageHendler;
         private CategoryButtonHendler _buttonHendler;
@@ -74,8 +73,6 @@ namespace Bot.Controllers
         {
             List<CategoryDto> list = _categoryType.GetAll(callbackQuery.From.Username);
 
-            if (_callback == null)
-                _callback = callbackQuery;
 
             if (callbackQuery.Data.StartsWith("category_next"))
             {
@@ -110,18 +107,18 @@ namespace Bot.Controllers
             return;
         }
 
-        public async Task NotificationDaily()
+        public async Task NotificationDaily(long chatId)
         {
             await _telegramBotClient.SendTextMessageAsync(
-                    _callback.Message.Chat.Id,
+                    chatId,
                     "🕗 День подходит к концу, не забудьте внести расходы");
         }
 
-        public async Task NotificationMonth()
+        public async Task NotificationMonth(long chatId)
         {
             //выведи инфу, что тут надо в конце месяца
             await _telegramBotClient.SendTextMessageAsync(
-                    _callback.Message.Chat.Id,
+                    chatId,
                     "");
         }
     }
