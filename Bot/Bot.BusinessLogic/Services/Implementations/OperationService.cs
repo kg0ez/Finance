@@ -28,18 +28,21 @@ namespace Bot.BusinessLogic.Services.Implementations
         public void Add(decimal value, string userName)
 		{
             var user = _userService.Get(userName);
-            var selectedCategory = ListOfSelectedIndexes.SelectedIndexes.FirstOrDefault(x=>x.Key == user.Id).Key;
-            var operation = new Operation { CategoryId = selectedCategory, Price = value, NameUser = userName,UserId = user.Id };
+            var selectedCategoryId = ListOfSelectedIndexes.SelectedIndexes.FirstOrDefault(x=>x.Key == user.Id).Value;
+            var operation = new Operation { CategoryId = selectedCategoryId, Price = value, NameUser = userName,UserId = user.Id };
             _context.Operations.Add(operation);
             _context.SaveChanges();
 
             var category = _context.Categories
-                .AsNoTracking().FirstOrDefault(x => x.Id == selectedCategory);
-            ListOfSelectedIndexes.SelectedIndexes.Remove(selectedCategory);
+                .AsNoTracking().FirstOrDefault(x => x.Id == selectedCategoryId);
+            ListOfSelectedIndexes.SelectedIndexes.Remove(selectedCategoryId);
             var categoryOperationType = category.Type;
 
             if (categoryOperationType == OperationType.Discharge)
-                _sheetService.AddDischarge(operation);
+            {
+                 _sheetService.AddDischarge(operation);
+                return;
+            }
             _sheetService.AddIncome(operation);
 
         }

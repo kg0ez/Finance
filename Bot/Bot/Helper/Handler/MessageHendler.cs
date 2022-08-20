@@ -20,8 +20,10 @@ namespace Bot.Helper.Handler
 
         private ReplyKeyboardMarkup _mainKeyboard { get; }
         private ReplyKeyboardMarkup _accountingKeyboard { get; }
+        private ReplyKeyboardMarkup _jointAccountingKeyboard { get; }
 
         private bool _isActiveIncome { get; set; }
+        private bool _isActiveInvite { get; set; }
 
         public MessageHendler(IButtonService buttonService,
             ICategoryService categoryType,
@@ -46,18 +48,22 @@ namespace Bot.Helper.Handler
 
             _accountingKeyboard = _buttonService.MenuButton(
                     new KeyboardButton[] { "Выбрать категорию", "Добавить категорию" },
-                    new KeyboardButton[] { "На главную" }
+                    new KeyboardButton[] { "⏪ В главное меню" }
                     );
+            _jointAccountingKeyboard = _buttonService.MenuButton(
+                    new KeyboardButton[] { "📲 Пригласить", "🔐 Закрыть" },
+                    new KeyboardButton[] { "⏪ В главное меню" }
+                );
         }
 
         public async Task HandleMessage(ITelegramBotClient botClient, Message message)
         {
             if (message.Text == "/start" || message.Text == "На главную")
             {
-                if (message.Text == "На главную")
+                if (message.Text == "⏪ В главное меню")
                 {
                     await botClient.SendTextMessageAsync(message.Chat.Id, "Вы вернулись на главную страницу", replyMarkup: _mainKeyboard);
-
+                    _isActiveInvite = false;
                     _isActiveIncome = false;
                     return;
                 }
@@ -76,6 +82,25 @@ namespace Bot.Helper.Handler
 
             if (message.Text.Contains("gmail"))
             {
+                if (_isActiveInvite)
+                {
+                    if (_driveService.HasPermission(message))
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat.Id, "У пользователя уже есть доступ к вашей таблице",
+                        replyMarkup: _jointAccountingKeyboard);
+                        return;
+                    }
+                    var permission = _driveService.SetPermission(message);
+                    if (permission == null)
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat.Id, "Произошла ошибка, проверьте правильность введённых данных.",
+                        replyMarkup: _jointAccountingKeyboard);
+                        return;
+                    }
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "Пользователь успешно добавлен",
+                        replyMarkup: _mainKeyboard);
+                    return;
+                }
                 var isCreated = _driveService.CreateTable(message);
 
                 if (isCreated)
@@ -97,6 +122,7 @@ namespace Bot.Helper.Handler
             }
             if (message.Text == "💰 Добавить доходы" || message.Text == "Назад" || message.Text == "💸 Добавить расходы")
             {
+                CategoryButtonHendler._pageNumber = 1;
                 string text = "Можете выбрать уже существующую категорию, нажав “Выбрать категорию“, или добавить, нажав “Добавить категорию“.";
                 _isActiveIncome = false;
 
@@ -112,6 +138,24 @@ namespace Bot.Helper.Handler
                 ListOfSelectedIndexes.SelectedIndexes.Remove(user);
                 await botClient.SendTextMessageAsync(message.Chat.Id, text, replyMarkup: _accountingKeyboard);
                 return;
+            }
+            if (message.Text == "👥 Совместный учет")
+            {
+                var text = "Пригласить пользователей или закрыть доступ?" +
+                    "Нажмите кнопку 👇";
+                await botClient.SendTextMessageAsync(message.Chat.Id, text, replyMarkup: _jointAccountingKeyboard);
+                return;
+            }
+            if (message.Text == "📲 Пригласить")
+            {
+                _isActiveInvite = true;
+                var text = "Введите gmail пользователя, которого хотите пригласить.";
+                await botClient.SendTextMessageAsync(message.Chat.Id, text, replyMarkup: _jointAccountingKeyboard);
+                return;
+            }
+            if (message.Text == "🔐 Закрыть")
+            {
+
             }
             if (message.Text == "Выбрать категорию")
             {

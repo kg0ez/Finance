@@ -9,7 +9,7 @@ namespace Bot.Helper.Handler
 	public class CategoryButtonHendler
 	{
         public static int PageCount { get; set; }
-        private int _pageNumber { get; set; } = 1;
+        public static int _pageNumber { get; set; } = 1;
         public static List<CategoryDto> ListCategory { get; set; }
 
         public async Task NextPage(ITelegramBotClient bot, CallbackQuery callbackQuery, IButtonService buttonService)

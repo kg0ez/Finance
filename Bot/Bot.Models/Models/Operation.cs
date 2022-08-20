@@ -11,7 +11,7 @@ namespace Bot.Models.Models
 
         public decimal Price { get; set; }
 
-        public string NameUser { get; set; }
+        public string? NameUser { get; set; }
 
         public int? UserId { get; set; }
         public User User { get; set; }

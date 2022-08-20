@@ -48,5 +48,16 @@ namespace Bot.BusinessLogic.Services.Implementations
 
             return user;
         }
+        public Models.Models.User GetByGmail(string gmail)
+        {
+            var user = _context.Users
+                .FirstOrDefault(x => x.GMail == gmail);
+
+            if (user == null)
+                return null;
+
+            return user;
+        }
+
     }
 }

@@ -10,8 +10,7 @@ namespace Bot.BusinessLogic.Services.Implementations
         public decimal Get(string type)
         {
             var currency = Currency();
-
-            return 10;
+            return 1;
             //if (type == "$")
             //    return currency[0];
             //return currency[1];
@@ -26,7 +25,7 @@ namespace Bot.BusinessLogic.Services.Implementations
             try
             {
                 int number = 0;
-                foreach (HtmlNode volume in document.DocumentNode.SelectNodes("//tr[contains(@class, 'tr-tb acc-link_11 not_h')]//td"))
+                foreach (HtmlNode volume in document.DocumentNode.SelectNodes("//tr[contains(@class, 'acc-link_11')]//td"))
                 {
 
                     if (number == 2)

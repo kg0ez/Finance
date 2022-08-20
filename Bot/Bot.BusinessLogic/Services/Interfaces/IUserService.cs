@@ -11,6 +11,7 @@ namespace Bot.BusinessLogic.Services.Interfaces
     {
         void Create(Message message);
         Models.Models.User Get(string userName);
+        Models.Models.User GetByGmail(string userName);
         bool IsUserExist(Message message);
     }
 }
