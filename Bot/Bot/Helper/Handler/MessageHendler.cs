@@ -253,6 +253,12 @@ namespace Bot.Helper.Handler
                     "Введите количество потраченных/заработанных средств, используя тег /m-сумма");
                 return;
             }
+            if (message.Text == "⚙️ Настройки")
+            {
+                InlineKeyboardMarkup keyboard = new(_buttonService.Settings());
+                await botClient.SendTextMessageAsync(message.Chat.Id, "Основные настройки бота",
+                        replyMarkup: keyboard);
+            }
             await botClient.SendTextMessageAsync(message.Chat.Id, $"Команда: " + message.Text +
                 " не найдена");
         }

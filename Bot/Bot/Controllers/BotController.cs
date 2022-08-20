@@ -19,6 +19,8 @@ namespace Bot.Controllers
         private readonly ISheetService _sheetService;
         private readonly IDriveService _driveService;
         private readonly IUserService _userService;
+        private ITelegramBotClient _telegramBotClient;
+        private CallbackQuery _callback;
 
         private MessageHendler messageHendler;
         private CategoryButtonHendler _buttonHendler;
@@ -47,6 +49,9 @@ namespace Bot.Controllers
         {
             try
             {
+                if (_telegramBotClient==null)
+                    _telegramBotClient = botClient;
+
                 if (update.Type == UpdateType.Message && update?.Message?.Text != null)
                 {
                     await messageHendler.HandleMessage(botClient, update.Message);
@@ -69,6 +74,9 @@ namespace Bot.Controllers
         {
             List<CategoryDto> list = _categoryType.GetAll(callbackQuery.From.Username);
 
+            if (_callback == null)
+                _callback = callbackQuery;
+
             if (callbackQuery.Data.StartsWith("category_next"))
             {
                 await _buttonHendler.NextPage(botClient, callbackQuery, _buttonService);
@@ -77,6 +85,11 @@ namespace Bot.Controllers
             if (callbackQuery.Data.StartsWith("category_back"))
             {
                 await _buttonHendler.BackPage(botClient, callbackQuery, _buttonService);
+                return;
+            }
+            if (callbackQuery.Data.StartsWith("notification"))
+            {
+                //сделай оключуение в бд user isNotification = false
                 return;
             }
             foreach (var category in list)
@@ -95,6 +108,21 @@ namespace Bot.Controllers
                 callbackQuery.Message.Chat.Id,
                 $"You choose with data: {callbackQuery.Data}");
             return;
+        }
+
+        public async Task NotificationDaily()
+        {
+            await _telegramBotClient.SendTextMessageAsync(
+                    _callback.Message.Chat.Id,
+                    "🕗 День подходит к концу, не забудьте внести расходы");
+        }
+
+        public async Task NotificationMonth()
+        {
+            //выведи инфу, что тут надо в конце месяца
+            await _telegramBotClient.SendTextMessageAsync(
+                    _callback.Message.Chat.Id,
+                    "");
         }
     }
 }

@@ -9,6 +9,7 @@ namespace Bot.Services.Interfaces
 			KeyboardButton[]? buttonsThirdRow = default);
 		List<InlineKeyboardButton> CategoryButtons();
 		ReplyKeyboardMarkup MenuButtonBack();
+		List<InlineKeyboardButton> Settings();
 	}
 }
 
