@@ -13,5 +13,6 @@ namespace Bot.BusinessLogic.Services.Interfaces
         Models.Models.User Get(string userName);
         Models.Models.User GetByGmail(string userName);
         bool IsUserExist(Message message);
+        List<Models.Models.User> GetForNotify();
     }
 }
