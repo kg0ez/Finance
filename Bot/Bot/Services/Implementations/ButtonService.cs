@@ -3,13 +3,13 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Bot.Services.Implementations
 {
-	public class ButtonService: IButtonService
-	{
+    public class ButtonService : IButtonService
+    {
         public ReplyKeyboardMarkup MenuButton(KeyboardButton[] buttonsFirstRow,
             KeyboardButton[]? buttonsSecondRow = default,
             KeyboardButton[]? buttonsThirdRow = default)
         {
-            ReplyKeyboardMarkup keyboard= new(buttonsFirstRow);
+            ReplyKeyboardMarkup keyboard = new(buttonsFirstRow);
 
             if (buttonsThirdRow != default)
             {
@@ -39,18 +39,29 @@ namespace Bot.Services.Implementations
                 };
             return buttons;
         }
-        public List<InlineKeyboardButton> Settings()
+        public List<InlineKeyboardButton> Settings(bool notificationStatus)
         {
-            List<InlineKeyboardButton> buttons = new List<InlineKeyboardButton>
+            List<InlineKeyboardButton> buttons;
+            if (notificationStatus)
+            {
+
+                buttons = new List<InlineKeyboardButton>
                 {
-                    InlineKeyboardButton.WithCallbackData("Уведомления бота", "notification"),
+                    InlineKeyboardButton.WithCallbackData("✅ Уведомления бота", "notification"),
+                };
+                return buttons;
+            }
+            buttons = new List<InlineKeyboardButton>
+                {
+                    InlineKeyboardButton.WithCallbackData("⛔ Уведомления бота", "notification"),
                 };
             return buttons;
+
         }
         public ReplyKeyboardMarkup MenuButtonBack()
         {
             ReplyKeyboardMarkup keyboard = new(
-                new KeyboardButton[] {  "Назад" }
+                new KeyboardButton[] { "Назад" }
             )
             {
                 ResizeKeyboard = true

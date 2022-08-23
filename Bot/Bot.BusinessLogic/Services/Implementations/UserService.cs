@@ -58,12 +58,54 @@ namespace Bot.BusinessLogic.Services.Implementations
 
             return user;
         }
+        public Models.Models.User GetByFirstName(string firstName)
+        {
+            var user = _context.Users
+                .FirstOrDefault(x => x.FirstName == firstName);
+
+            if (user == null)
+                return null;
+
+            return user;
+        }
 
         public List<Models.Models.User> GetForNotify()
         {
             var query = _context.Users.Where(x => x.NotificationIsToggle == true);
             var users = query.AsNoTracking().ToList();
             return users;
+        }
+
+        public bool ToggleNotification(string userName)
+        {
+            var user = Get(userName);
+            if (user.NotificationIsToggle)
+            {
+                user.NotificationIsToggle = false;
+                return false;
+            }
+            user.NotificationIsToggle = true;
+            _context.SaveChanges();
+            return true;
+        }
+        public bool ShowNotificationStatus(string userName)
+        {
+            var user = Get(userName);
+            return user.NotificationIsToggle;
+        }
+        public bool HasTable(Message message)
+        {
+            Models.Models.User? user = Get(message.From.Username);
+            if (user!= null & user?.SpeadsheetId != null)
+            {
+                return true;
+            }
+            Models.Models.User? userByLogin = GetByFirstName(message.From.FirstName);
+            if (user != null & user?.SpeadsheetId != null)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

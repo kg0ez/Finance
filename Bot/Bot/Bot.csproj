@@ -29,8 +29,6 @@
     <Folder Include="Services\" />
     <Folder Include="Services\Interfaces\" />
     <Folder Include="Services\Implementations\" />
-    <Folder Include="Helper\" />
-    <Folder Include="Helper\Handler\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bot.BusinessLogic\Bot.BusinessLogic.csproj" />

@@ -9,5 +9,6 @@ namespace Bot.BusinessLogic.Services.Interfaces
         void SetPermission(string gmail, string fileId);
         Permission SetPermission(Message message);
         bool HasPermission(Message message);
+        bool DeletePermission(Message message);
     }
 }

@@ -20,6 +20,7 @@ namespace Bot.Controllers
         private readonly IDriveService _driveService;
         private readonly IUserService _userService;
         private ITelegramBotClient _telegramBotClient;
+        private NotificationButtonHandler _notificationButtonHandler;
 
         private MessageHendler messageHendler;
         private CategoryButtonHendler _buttonHendler;
@@ -42,7 +43,8 @@ namespace Bot.Controllers
             _sheetService = sheetService;
             _buttonHendler = categoryButtonHendler;
             //operationService.Get();
-            messageHendler = new MessageHendler(_buttonService, _categoryType, _operationService, currencyService, _sheetService, _driveService,_userService);
+            messageHendler = new MessageHendler(_buttonService, _categoryType, _operationService, currencyService, _sheetService, _driveService, _userService);
+            _notificationButtonHandler = new NotificationButtonHandler(_buttonService);
         }
         public async Task HandleUpdatesAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
@@ -86,7 +88,9 @@ namespace Bot.Controllers
             }
             if (callbackQuery.Data.StartsWith("notification"))
             {
-                //сделай оключуение в бд user isNotification = false
+                var result = _userService.ToggleNotification(callbackQuery.From.Username);
+
+                _notificationButtonHandler.EditButtons(botClient, result, callbackQuery);
                 return;
             }
             foreach (var category in list)
@@ -96,7 +100,7 @@ namespace Bot.Controllers
                     ListOfSelectedIndexes.SelectedIndexes.Add(_userService.Get(callbackQuery.From.Username).Id, category.Id);
                     await botClient.SendTextMessageAsync(
                     callbackQuery.Message.Chat.Id,
-                    "Введите количество заработанных средств, используя тег /m-сумма\n /m-2500",
+                    "Введите сумму, используя тег /m-сумма\n /m-2500",
                     replyMarkup: _buttonService.MenuButtonBack());
                     return;
                 }

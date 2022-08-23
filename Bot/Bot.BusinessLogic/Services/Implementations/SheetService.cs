@@ -35,7 +35,7 @@ namespace Bot.BusinessLogic.Services.Implementations
 
             string range = $"{FIRST_SHEET_NAME}!A:D";
             var requestBody = new ValueRange();
-            var objectList = new List<object> { $"{DateTime.Now}", $"{operation.Category.Name}", $"{operation.Price},", $"{user.FirstName}" };
+            var objectList = new List<object> { $"{DateTime.Now}", $"{operation.Category.Name}", $"{operation.Price}", $"{user.FirstName}" };
             requestBody.Values = new List<IList<object>> { objectList };
             var appendRequest = _sheetsService.Spreadsheets.Values
                 .Append(requestBody, SpreadSheet.SpreadsheetId, range);

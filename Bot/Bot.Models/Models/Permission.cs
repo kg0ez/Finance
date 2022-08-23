@@ -7,5 +7,6 @@ namespace Bot.Models.Models
         public int UserId { get; set; }
         public User User { get; set; }
         public string FileId { get; set; }
+        public string PermissionId { get; set; }
     }
 }

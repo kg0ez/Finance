@@ -22,7 +22,7 @@ namespace Bot.BusinessLogic.Services.Implementations
         private readonly IUserService _userService;
         private readonly ApplicationContext _context;
 
-        public DriveService(IUserService userService,ApplicationContext context)
+        public DriveService(IUserService userService, ApplicationContext context)
         {
             _context = context;
             _userService = userService;
@@ -44,6 +44,7 @@ namespace Bot.BusinessLogic.Services.Implementations
 
                 var user = _userService.Get(message.From.Username);
                 user.SpeadsheetId = copiedFile.Id;
+                user.StartSpeadsheetId = copiedFile.Id;
                 user.GMail = message.Text;
                 _context.SaveChanges();
 
@@ -67,16 +68,19 @@ namespace Bot.BusinessLogic.Services.Implementations
 
                 PermissionsResource.CreateRequest createPermRequest = _driveService.Permissions
                     .Create(permissionBody, fileId);
+                var createPermResponse = createPermRequest.Execute();
+
                 var permission = new Models.Models.Permission()
                 {
                     FileId = fileId,
-                    UserId = user.Id
+                    UserId = user.Id,
+                    PermissionId = createPermResponse.Id
                 };
                 _context.Permissions.Add(permission);
                 _context.SaveChanges();
                 createPermRequest.Execute();
             }
-            catch (Exception){}
+            catch (Exception) { }
         }
         public Permission SetPermission(Message message)
         {
@@ -92,20 +96,41 @@ namespace Bot.BusinessLogic.Services.Implementations
 
                 PermissionsResource.CreateRequest createPermRequest = _driveService.Permissions
                     .Create(permissionBody, fileId);
-
+                var createPermResponse = createPermRequest.Execute();
                 var permission = new Models.Models.Permission()
                 {
                     FileId = fileId,
-                    UserId = userToInvite.Id
+                    UserId = userToInvite.Id,
+                    PermissionId = createPermResponse.Id
                 };
                 userToInvite.SpeadsheetId = fileId;
                 _context.Permissions.Add(permission);
                 _context.SaveChanges();
-                return createPermRequest.Execute();
+                return createPermResponse;
             }
             catch (Exception)
             {
                 return null;
+            }
+        }
+        public bool DeletePermission(Message message)
+        {
+            try
+            {
+                var userToDelete = _userService.GetByGmail(message.Text);
+                var user = _userService.Get(message.From.Username);
+                var permission = _context.Permissions
+                    .SingleOrDefault(x => x.FileId == userToDelete.SpeadsheetId &&
+                x.UserId == userToDelete.Id);
+                PermissionsResource.DeleteRequest deleteRequest = _driveService.Permissions.Delete(permission.FileId, permission.PermissionId);
+                var deleteResponse = deleteRequest.Execute();
+                userToDelete.SpeadsheetId = userToDelete.StartSpeadsheetId;
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
         public bool HasPermission(Message message)
@@ -117,7 +142,7 @@ namespace Bot.BusinessLogic.Services.Implementations
             if (userToInvite == null) return false;
 
             var permissionList = GetPermissionsList(fileId);
-            var permission = permissionList.SingleOrDefault(x=>x.UserId == userToInvite.Id);
+            var permission = permissionList.SingleOrDefault(x => x.UserId == userToInvite.Id);
             if (permission == null) return false;
             return true;
 

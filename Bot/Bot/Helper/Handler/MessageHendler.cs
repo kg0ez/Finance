@@ -24,6 +24,7 @@ namespace Bot.Helper.Handler
 
         private bool _isActiveIncome { get; set; }
         private bool _isActiveInvite { get; set; }
+        private bool _isActiveDisconnect { get; set; }
 
         public MessageHendler(IButtonService buttonService,
             ICategoryService categoryType,
@@ -58,7 +59,7 @@ namespace Bot.Helper.Handler
 
         public async Task HandleMessage(ITelegramBotClient botClient, Message message)
         {
-            if (message.Text == "/start" || message.Text == "На главную")
+            if (message.Text == "/start" || message.Text == "⏪ В главное меню")
             {
                 if (message.Text == "⏪ В главное меню")
                 {
@@ -84,9 +85,18 @@ namespace Bot.Helper.Handler
             {
                 if (_isActiveInvite)
                 {
-                    if (_driveService.HasPermission(message))
+                    if (_userService.IsUserExist(message))
                     {
-                        await botClient.SendTextMessageAsync(message.Chat.Id, "У пользователя уже есть доступ к вашей таблице",
+                        if (_driveService.HasPermission(message))
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat.Id, "У пользователя уже есть доступ к вашей таблице",
+                            replyMarkup: _jointAccountingKeyboard);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat.Id, "Пользователя с введённой почтой не существует.",
                         replyMarkup: _jointAccountingKeyboard);
                         return;
                     }
@@ -101,13 +111,41 @@ namespace Bot.Helper.Handler
                         replyMarkup: _mainKeyboard);
                     return;
                 }
-                var isCreated = _driveService.CreateTable(message);
-
-                if (isCreated)
+                if (_isActiveDisconnect)
                 {
-                    await botClient.SendTextMessageAsync(message.Chat.Id, "Ваша таблица для учёта данных успешно создана!",
+                    if (_userService.IsUserExist(message))
+                    {
+                        if (_driveService.HasPermission(message) == false)
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat.Id, "Пользователь не был ранее добавлен в совместный режим",
+                            replyMarkup: _jointAccountingKeyboard);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat.Id, "Пользователя с введённой почтой не существует.",
+                        replyMarkup: _jointAccountingKeyboard);
+                        return;
+                    }
+                    var isDeleted = _driveService.DeletePermission(message);
+                    if (isDeleted)
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat.Id, "Пользователь успешно отключен",
                         replyMarkup: _mainKeyboard);
-                    return;
+                        return;
+                    }
+
+                }
+                if (_userService.HasTable(message) == false)
+                {
+                    var isCreated = _driveService.CreateTable(message);
+                    if (isCreated)
+                    {
+                        await botClient.SendTextMessageAsync(message.Chat.Id, "Ваша таблица для учёта данных успешно создана!",
+                            replyMarkup: _mainKeyboard);
+                        return;
+                    }
                 }
 
                 await botClient.SendTextMessageAsync(message.Chat.Id, "Неверный ввод, повторите попытку.");
@@ -155,7 +193,11 @@ namespace Bot.Helper.Handler
             }
             if (message.Text == "🔐 Закрыть")
             {
-
+                _isActiveDisconnect = true;
+                _isActiveInvite = false;
+                var text = "Введите gmail пользователя, которого хотите отключить от совместного редактирования.";
+                await botClient.SendTextMessageAsync(message.Chat.Id, text, replyMarkup: _jointAccountingKeyboard);
+                return;
             }
             if (message.Text == "Выбрать категорию")
             {
@@ -164,7 +206,7 @@ namespace Bot.Helper.Handler
                 if (_isActiveIncome)
                     typeCategory = 1;
 
-                List<CategoryDto> categoriesDto = _categoryService.GetAllByType(typeCategory,message.From.Username);
+                List<CategoryDto> categoriesDto = _categoryService.GetAllByType(typeCategory, message.From.Username);
 
                 CategoryButtonHendler.PageCount = Convert.ToInt32(Math.Ceiling((double)categoriesDto.Count / 3));
                 CategoryButtonHendler.ListCategory = categoriesDto;
@@ -240,7 +282,7 @@ namespace Bot.Helper.Handler
 
                 if (_isActiveIncome)
                     type = OperationType.Income;
-                
+
                 if (_categoryService.IsExist(message, type))
                 {
                     await botClient.SendTextMessageAsync(message.Chat.Id, "Категория не была добавлена", replyMarkup: _mainKeyboard);
@@ -255,9 +297,20 @@ namespace Bot.Helper.Handler
             }
             if (message.Text == "⚙️ Настройки")
             {
-                InlineKeyboardMarkup keyboard = new(_buttonService.Settings());
-                await botClient.SendTextMessageAsync(message.Chat.Id, "Основные настройки бота",
+                InlineKeyboardMarkup keyboard;
+                if (_userService.ShowNotificationStatus(message.From.Username))
+                {
+                    keyboard = new(_buttonService.Settings(true));
+
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "Уведомления бота включены",
+                            replyMarkup: keyboard);
+                    return;
+                }
+                keyboard = new(_buttonService.Settings(false));
+
+                await botClient.SendTextMessageAsync(message.Chat.Id, "Уведомления бота выключены",
                         replyMarkup: keyboard);
+                return;
             }
             await botClient.SendTextMessageAsync(message.Chat.Id, $"Команда: " + message.Text +
                 " не найдена");

@@ -17,7 +17,7 @@ using Telegram.Bot.Types;
 
 var serviceProvider = new ServiceCollection()
             .AddLogging()
-            .AddSingleton<IButtonService, ButtonService>()
+            .AddTransient<IButtonService, ButtonService>()
             .AddSingleton<IErrorService, ErrorService>()
             .AddSingleton<ICategoryService, CategoryService>()
             .AddSingleton<IOperationService, OperationService>()

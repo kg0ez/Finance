@@ -14,5 +14,8 @@ namespace Bot.BusinessLogic.Services.Interfaces
         Models.Models.User GetByGmail(string userName);
         bool IsUserExist(Message message);
         List<Models.Models.User> GetForNotify();
+        bool ToggleNotification(string userName);
+        bool ShowNotificationStatus(string userName);
+        bool HasTable(Message message);
     }
 }
